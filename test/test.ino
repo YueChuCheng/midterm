@@ -15,7 +15,8 @@ const int buttonPin_right = 19;
 int freq = 5000;
 int ledchannel = 0;
 int resolution = 8;
-
+int channel=0;
+int speedconfirm=0;
 const char* ssid = "iPhone";
 const char* password = "maggie9907";
 int buttonState_right=0;
@@ -24,7 +25,7 @@ int buttonState_top=0;
 int buttonState_down=0;
 int i=0;
 int c=0;
-char webSite[1000];
+char webSite[2000];
 const int buttonPin_left = 32;
 int ledlife[3]={32,33,25};
 int speedtime=0;
@@ -40,11 +41,11 @@ int losetime=0;
 WebServer server(80);
 
 int val = 0;
-
+int gametone[2]={330,262};
 const int led = 23;
 
 void handleRoot() {
-  snprintf(webSite,1000,"<html><head> <meta charset='UTF-8'/> <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"> <title>Remote Control LED</title> <style>html{background-color: #bce6ff; font-family: Arial, Helvetica, sans-serif;}.title{text-align: center; color: #d33d3d; margin-bottom: 50px;}a{position:relative; text-decoration: none; background-color: #FFFFFF; border-radius: 4px; height:100px; width: 100px; text-align: center; margin: 0 ; top:50%; font-size: 2em; /*outline: solid red 2px;*/}.btn{color: #5e5e5e;}.toprow{display:flex; justify-content: center; /* outline: solid red 2px;*/}.secrow{justify-content: center; display:flex; /* outline: solid red 2px;*/}</style></head><body> <h1 class=\"title\">Block controler</h1> <div class=\"toprow\"> <a class=\"btn\" href=\"/T\"><p>top</p></a> </div><div class=\"secrow\"> <a class=\"btn\" href=\"/L\"><p>left</p></a> <a class=\"btn\" href=\"/D\"><p>down</p></a> <a class=\"btn\" href=\"/R\"><p>right</p></a> </div></body></html> ");
+  snprintf(webSite,2000,"<!DOCTYPE html> <html lang=\"en\"> <head> <meta charset=\"UTF-8\" > <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"> <title>Remote Control LED</title> <script src=\"https://code.jquery.com/jquery-3.3.1.js\"></script> <script>$(document).ready(function(){$(\"[type=range]\").change(function(){var ledvalue=$(\"#led\").val(); $(\".ledvalue\").text(ledvalue);});}); </script> <style>html{background-color: #bce6ff; font-family: Arial, Helvetica, sans-serif;}.title{text-align: center; color: #d33d3d; margin-bottom: 50px;}a{position:relative; text-decoration: none; background-color: #FFFFFF; border-radius: 4px; height:100px; width: 100px; text-align: center; margin: 0 ; top:50%; font-size: 2em; /*outline: solid red 2px;*/}.btn{color: #5e5e5e;}.toprow{display:flex; justify-content: center; /* outline: solid red 2px;*/}.secrow{justify-content: center; display:flex; /* outline: solid red 2px;*/}.speedchoose{/* outline: solid red 2px;*/ display:flex; flex-direction:column; text-align: center;}.submit{/*outline: solid red 2px;*/ text-align: center; width:100px; margin-bottom:30px;}</style> </head> <body> <h1 class=\"title\">Block controler</h1> <div class=\"speedchoose\"> <h3>Game Speed=<span class='ledvalue'>0</span></h3> <form action=\"ledDiming\" method=\"get\" id=\"form1\"> <input type=\"range\" name=\"ledval\" id=\"led\" min=\"0\" max=\"20\"> </form> <br><div> <button type=\"submit\" form=\"form1\" value=\"Submit\" class=\"submit\">Submit</button> </div></div><div class=\"toprow\"> <a class=\"btn\" href=\"/T\"><p>top</p></a> </div><div class=\"secrow\"> <a class=\"btn\" href=\"/L\"><p>left</p></a> <a class=\"btn\" href=\"/D\"><p>down</p></a> <a class=\"btn\" href=\"/R\"><p>right</p></a> </div></body> </html>");
   server.send(200, "text/html",webSite);
 
 }
@@ -153,7 +154,13 @@ void down(){
               } 
   
   }
-
+  
+void ledDiming(){
+  
+  playSpeed=server.arg("ledval").toInt();
+  speedconfirm=1;
+  
+  }
 
 void handleNotFound() {
   digitalWrite(led, 1);
@@ -173,10 +180,12 @@ void handleNotFound() {
 }
 
 void setup(void) {
+  ledcSetup(channel, freq, resolution);
+ledcAttachPin(12, channel);
   Serial.begin(115200);
-  display.flipScreenVertically();
+  
 
-pinMode(27,INPUT);
+pinMode(36,INPUT);
 display.init();
   display.flipScreenVertically();
   display.setFont(ArialMT_Plain_10);
@@ -214,7 +223,7 @@ display.init();
   server.on("/R", right);
   server.on("/L", left);
   server.onNotFound(handleNotFound);
-
+server.on("/ledDiming",ledDiming);
  server.begin();
   Serial.println("HTTP server started");
 
@@ -391,34 +400,45 @@ void loop(void) {
 */
 display.clear();
 Start();
-    delay(1000);
+int pressstart=0;
+while(pressstart!=HIGH||speedconfirm!=1){
+  pressstart=digitalRead(36);
+    delay(1);
+    server.handleClient();
+    server.send(200, "text/html",webSite);
+ 
+   
+}
+pressstart=0;
+speedconfirm=0;
 for(int x=0;x<3 ;x++ ){
        pinMode(ledlife[x], OUTPUT);
         digitalWrite(ledlife[x], HIGH);
     
     }
      display.clear();
-      display.drawString(0, 0, "Ready?");
+     display.setFont(ArialMT_Plain_24);
+      display.drawString(0, 20, "Ready?");
       display.display(); 
       delay(1000);
 
       display.clear();
-      display.drawString(0, 0, "3");
+      display.drawString(60, 20, "3");
       display.display(); 
       delay(1000);
 
       display.clear();
-      display.drawString(0, 0, "2");
+      display.drawString(60, 20, "2");
       display.display(); 
       delay(1000);
 
       display.clear();
-      display.drawString(0, 0, "1");
+      display.drawString(60, 20, "1");
       display.display(); 
       delay(1000);
 
       display.clear();
-      display.drawString(0, 0, "Go!");
+      display.drawString(60, 20, "Go!");
       display.display(); 
       delay(1000);
 
@@ -712,19 +732,26 @@ while(idle_time!=6){
       if(point>=10){
         
         Win();
-        display.drawString(0, 0, "Your Score");
-        display.drawString(80, 25, String(point));
+       display.setTextAlignment(TEXT_ALIGN_LEFT);
+        display.setFont(ArialMT_Plain_24);
+
+        display.drawString(80, 0, "Your Score");
+        display.drawString(80, 0, String(point));
         display.display(); 
         delay(3000);
         }
         else{
       Lost();
+     display.setTextAlignment(TEXT_ALIGN_LEFT);
+      display.setFont(ArialMT_Plain_24);
+      
        display.drawString(0, 0, "Your Score");
-       display.drawString(80, 25, String(point));
+       display.drawString(60, 25, String(point));
        display.display(); 
       delay(3000);
         }
   
    display.display(); 
+    
 }
   
