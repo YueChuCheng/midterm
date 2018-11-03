@@ -11,6 +11,7 @@
 #define Logo_width 128
 #define Logo_height 64
 SSD1306Wire  display(0x3c, 21, 22);
+int ledp[10]={2,4,16,17,27,26,13,1,19,18};
 const int buttonPin_right = 19; 
 int freq = 5000;
 int ledchannel = 0;
@@ -30,7 +31,7 @@ const int buttonPin_left = 32;
 int ledlife[3]={32,33,25};
 int speedtime=0;
 int x=0;
-
+int w=0;
 int idle_time=0;
 int state=-1;
 int playSpeed=5;
@@ -39,215 +40,11 @@ int wintime=0;
 int playtime=0;
 int losetime=0;
 WebServer server(80);
-/*int ledPins[10] = { 
-  19, 11, 10, 9, 13,1,27,14,12,18}; */
+int ledPins[3] = { 11,10,9
+  /*19, 11, 10, 9, 13,1,27,14,12,18*/}; 
 int val = 0;
 int gametone[2]={330,262};
 const int led = 23;
-
-void handleRoot() {
-  snprintf(webSite,2000,"<!DOCTYPE html> <html lang=\"en\"> <head> <meta charset=\"UTF-8\" > <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"> <title>Remote Control LED</title> <script src=\"https://code.jquery.com/jquery-3.3.1.js\"></script> <script>$(document).ready(function(){$(\"[type=range]\").change(function(){var ledvalue=$(\"#led\").val(); $(\".ledvalue\").text(ledvalue);});}); </script> <style>html{background-color: #bce6ff; font-family: Arial, Helvetica, sans-serif;}.title{text-align: center; color: #d33d3d; margin-bottom: 50px;}a{position:relative; text-decoration: none; background-color: #FFFFFF; border-radius: 4px; height:100px; width: 100px; text-align: center; margin: 0 ; top:50%; font-size: 2em; /*outline: solid red 2px;*/}.btn{color: #5e5e5e;}.toprow{display:flex; justify-content: center; /* outline: solid red 2px;*/}.secrow{justify-content: center; display:flex; /* outline: solid red 2px;*/}.speedchoose{/* outline: solid red 2px;*/ display:flex; flex-direction:column; text-align: center;}.submit{/*outline: solid red 2px;*/ text-align: center; width:100px; margin-bottom:30px;}</style> </head> <body> <h1 class=\"title\">Block controler</h1> <div class=\"speedchoose\"> <h3>Game Speed=<span class='ledvalue'>0</span></h3> <form action=\"ledDiming\" method=\"get\" id=\"form1\"> <input type=\"range\" name=\"ledval\" id=\"led\" min=\"0\" max=\"20\"> </form> <br><div> <button type=\"submit\" form=\"form1\" value=\"Submit\" class=\"submit\">Submit</button> </div></div><div class=\"toprow\"> <a class=\"btn\" href=\"/T\"><p>top</p></a> </div><div class=\"secrow\"> <a class=\"btn\" href=\"/L\"><p>left</p></a> <a class=\"btn\" href=\"/D\"><p>down</p></a> <a class=\"btn\" href=\"/R\"><p>right</p></a> </div></body> </html>");
-  server.send(200, "text/html",webSite);
-
-}
-
-void right(){
-              server.handleClient();
-            server.send(200, "text/html",webSite);
-             digitalWrite(led,HIGH);
-             display.drawXbm(54,-10 ,64, 128,*(rock_right));
-             Gamepic();
-          
-             display.display(); 
-                    
-             if(i<=7&&i>0){
-               display.clear();
-              /* display.drawXbm(35, 0,64, 128,*( idle+x));*/
-               Gamepic();
-               Drawball(84,32);
-               display.display(); 
-               display.drawXbm(54, -10,64, 128,*(  rock_right));
-               display.display();          
-               point++;
-              /* digitalWrite(ledPins[point-1],HIGH);*/
-               delay(1000);
-               
-               buttonState_right=1;
-              } 
-                     
-         
-
-  }
-
-void left(){
-          server.handleClient();
-          server.send(200, "text/html",webSite);
-          digitalWrite(led,LOW);
-          display.drawXbm(10,-10 ,64, 128,*(rock_left));
-          Gamepic();
-             display.display(); 
-            
-             
-             if(i>=-8&&i<0){
-               display.clear();
-               /*display.drawXbm(35, 0,64, 128,*( idle+x));*/
-                Gamepic();
-               Drawball(84,32);
-               display.display(); 
-              display.drawXbm(10, -10,64, 128,*(  rock_left));
-               display.display();          
-               point++;
-              /* digitalWrite(ledPins[point-1],HIGH);*/
-               delay(1000);
-               
-              buttonState_left=1;
-              } 
-  
-  }
-
-void top(){
-               server.handleClient();
-           server.send(200, "text/html",webSite);
-             digitalWrite(led,HIGH);
-              /*display.drawXbm(-200,7 ,64, 128,*(rock_top));*/
-              display.drawXbm(54,0 ,64, 128,*(rock_top));
-              Gamepic();
-             display.display(); 
-                    
-             if(c>=-8&&c<0){
-               display.clear();
-              /* display.drawXbm(35, 0,64, 128,*( idle+x));*/
-               Gamepic();
-               Drawball(84,32);
-               display.display(); 
-               display.drawXbm(54,0,64, 128,*(  rock_top));
-               display.display();          
-               point++;
-             
-               /*digitalWrite(ledPins[point-1],HIGH);*/
-               delay(1000);
-               
-               buttonState_top=1;
-              } 
-                     
-         
-
-  }
-
-void down(){
-         server.handleClient();
-         server.send(200, "text/html",webSite);
-          digitalWrite(led,LOW);
-          display.drawXbm(54,50 ,64, 128,*(rock_top));
-          Gamepic();
-         /* display.drawXbm(20,-5,64, 128,*(rock_down));*/
-             display.display(); 
-            
-             
-             if(c<=7&&c>0){
-               display.clear();
-               /*display.drawXbm(35, 0,64, 128,*( idle+x));*/
-                Gamepic();
-               Drawball(84,32);
-               display.display(); 
-               display.drawXbm(54,50,64, 128,*(  rock_top));
-               display.display();          
-               point++;
-              /* digitalWrite(ledPins[point-1],HIGH);*/
-               delay(1000);
-               
-              buttonState_down=1;
-              } 
-  
-  }
-  
-void ledDiming(){
-  
-  playSpeed=server.arg("ledval").toInt();
-  speedconfirm=1;
-  
-  }
-
-void handleNotFound() {
-  digitalWrite(led, 1);
-  String message = "File Not Found\n\n";
-  message += "URI: ";
-  message += server.uri();
-  message += "\nMethod: ";
-  message += (server.method() == HTTP_GET) ? "GET" : "POST";
-  message += "\nArguments: ";
-  message += server.args();
-  message += "\n";
-  for (uint8_t i = 0; i < server.args(); i++) {
-    message += " " + server.argName(i) + ": " + server.arg(i) + "\n";
-  }
-  server.send(404, "text/plain", message);
-  digitalWrite(led, 0);
-}
-
-void setup(void) {
-  /*for (int thisLed = 0; thisLed < 10; thisLed++) {
-    pinMode(ledPins[thisLed], OUTPUT); 
-    digitalWrite(ledPins[thisLed], LOW); 
-  }*/
-  ledcSetup(channel, freq, resolution);
-ledcAttachPin(12, channel);
-  Serial.begin(115200);
-  
-
-pinMode(36,INPUT);
-display.init();
-  display.flipScreenVertically();
-  display.setFont(ArialMT_Plain_10);
-
-  for(int x=0;x<3 ;x++ ){
-       pinMode(ledlife[x], OUTPUT);
-       
-    
-    }
-   
-  WiFi.mode(WIFI_STA);
-  
-  WiFi.begin(ssid, password);
-  Serial.println("");
-
-  // Wait for connection
-  while (WiFi.status() != WL_CONNECTED) {
-    delay(500);
-    Serial.print(".");
-  }
-  Serial.println("");
-  Serial.print("Connected to ");
-  Serial.println(ssid);
-  Serial.print("IP address: ");
-  Serial.println(WiFi.localIP());
-
-  if (MDNS.begin("esp32")) {
-    Serial.println("MDNS responder started");
-  }
-
-  
-  server.on("/", handleRoot);
-  server.on("/T", top);
- server.on("/D", down);
-  server.on("/R", right);
-  server.on("/L", left);
-  server.onNotFound(handleNotFound);
-server.on("/ledDiming",ledDiming);
- server.begin();
-  Serial.println("HTTP server started");
-
-Serial.begin(115200);
-  Serial.println();
- display.init(); //初始化(init)
- 
-  display.setContrast(255); //數值介於0~255，調整對比
-  display.clear();//清除螢幕和緩衝區(clear)
-  //display.drawXbm(35, 0,64, 128, walk_0_img);
-  //印出想顯示的畫面  display.drawXbm(X座標, Y座標, 圖片寬度, 圖片高度, 圖片名稱);
- // display.display(); //顯示畫面(display)
-  
-}
 void Changescene() {
     for (int i=1; i < 33; i++) {
         display.setColor(WHITE);
@@ -371,6 +168,223 @@ void Gamepic(){
         deley(1000);
     }*///待解決的問題：倒數計時要怎麼做？一旦用display.clear()畫面全會消失
 }
+void handleRoot() {
+  snprintf(webSite,2000,"<!DOCTYPE html> <html lang=\"en\"> <head> <meta charset=\"UTF-8\" > <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"> <title>Remote Control LED</title> <script src=\"https://code.jquery.com/jquery-3.3.1.js\"></script> <script>$(document).ready(function(){$(\"[type=range]\").change(function(){var ledvalue=$(\"#led\").val(); $(\".ledvalue\").text(ledvalue);});}); </script> <style>html{background-color: #bce6ff; font-family: Arial, Helvetica, sans-serif;}.title{text-align: center; color: #d33d3d; margin-bottom: 50px;}a{position:relative; text-decoration: none; background-color: #FFFFFF; border-radius: 4px; height:100px; width: 100px; text-align: center; margin: 0 ; top:50%; font-size: 2em; /*outline: solid red 2px;*/}.btn{color: #5e5e5e;}.toprow{display:flex; justify-content: center; /* outline: solid red 2px;*/}.secrow{justify-content: center; display:flex; /* outline: solid red 2px;*/}.speedchoose{/* outline: solid red 2px;*/ display:flex; flex-direction:column; text-align: center;}.submit{/*outline: solid red 2px;*/ text-align: center; width:100px; margin-bottom:30px;}</style> </head> <body> <h1 class=\"title\">Block controler</h1> <div class=\"speedchoose\"> <h3>Game Speed=<span class='ledvalue'>0</span></h3> <form action=\"ledDiming\" method=\"get\" id=\"form1\"> <input type=\"range\" name=\"ledval\" id=\"led\" min=\"0\" max=\"20\"> </form> <br><div> <button type=\"submit\" form=\"form1\" value=\"Submit\" class=\"submit\">Submit</button> </div></div><div class=\"toprow\"> <a class=\"btn\" href=\"/T\"><p>top</p></a> </div><div class=\"secrow\"> <a class=\"btn\" href=\"/L\"><p>left</p></a> <a class=\"btn\" href=\"/D\"><p>down</p></a> <a class=\"btn\" href=\"/R\"><p>right</p></a> </div></body> </html>");
+  server.send(200, "text/html",webSite);
+
+}
+
+void right(){
+              server.handleClient();
+            server.send(200, "text/html",webSite);
+             digitalWrite(led,HIGH);
+             display.drawXbm(54,-10 ,64, 128,*(rock_right));
+             Gamepic();
+          
+             display.display(); 
+                    
+             if(i*playSpeed<=64&&i*playSpeed>0){
+               display.clear();
+              /* display.drawXbm(35, 0,64, 128,*( idle+x));*/
+               Gamepic();
+               Drawball(84,32);
+               display.display(); 
+               display.drawXbm(54, -10,64, 128,*(  rock_right));
+               display.display();          
+               point++;
+                digitalWrite(ledp[w],HIGH);
+               w++;
+               
+              
+               delay(1000);
+               
+               buttonState_right=1;
+              } 
+                     
+         
+
+  }
+
+void left(){
+          server.handleClient();
+          server.send(200, "text/html",webSite);
+          digitalWrite(led,LOW);
+          display.drawXbm(10,-10 ,64, 128,*(rock_left));
+          Gamepic();
+             display.display(); 
+            
+             
+             if(i*playSpeed>=-64&&i*playSpeed<0){
+               display.clear();
+               /*display.drawXbm(35, 0,64, 128,*( idle+x));*/
+                Gamepic();
+               Drawball(84,32);
+               display.display(); 
+              display.drawXbm(10, -10,64, 128,*(  rock_left));
+               display.display();          
+               point++;
+             digitalWrite(ledp[w],HIGH);
+               w++;
+               delay(1000);
+               
+              buttonState_left=1;
+              } 
+  
+  }
+
+void top(){
+               server.handleClient();
+           server.send(200, "text/html",webSite);
+             digitalWrite(led,HIGH);
+              /*display.drawXbm(-200,7 ,64, 128,*(rock_top));*/
+              display.drawXbm(54,0 ,64, 128,*(rock_top));
+              Gamepic();
+             display.display(); 
+                    
+             if(c*playSpeed>=-64&&c*playSpeed<0){
+               display.clear();
+              /* display.drawXbm(35, 0,64, 128,*( idle+x));*/
+               Gamepic();
+               Drawball(84,32);
+               display.display(); 
+               display.drawXbm(54,0,64, 128,*(  rock_top));
+               display.display();          
+               point++;
+             
+              digitalWrite(ledp[w],HIGH);
+               w++;
+               delay(1000);
+               
+               buttonState_top=1;
+              } 
+                     
+         
+
+  }
+
+void down(){
+         server.handleClient();
+         server.send(200, "text/html",webSite);
+          digitalWrite(led,LOW);
+          display.drawXbm(54,50 ,64, 128,*(rock_top));
+          Gamepic();
+         /* display.drawXbm(20,-5,64, 128,*(rock_down));*/
+             display.display(); 
+            
+             
+             if(c*playSpeed<=64&&c>0){
+               display.clear();
+               /*display.drawXbm(35, 0,64, 128,*( idle+x));*/
+                Gamepic();
+               Drawball(84,32);
+               display.display(); 
+               display.drawXbm(54,50,64, 128,*(  rock_top));
+               display.display();          
+               point++;
+             digitalWrite(ledp[w],HIGH);
+               w++;
+               delay(1000);
+               
+              buttonState_down=1;
+              } 
+  
+  }
+  
+void ledDiming(){
+  
+  playSpeed=server.arg("ledval").toInt();
+  speedconfirm=1;
+  
+  }
+
+void handleNotFound() {
+  digitalWrite(led, 1);
+  String message = "File Not Found\n\n";
+  message += "URI: ";
+  message += server.uri();
+  message += "\nMethod: ";
+  message += (server.method() == HTTP_GET) ? "GET" : "POST";
+  message += "\nArguments: ";
+  message += server.args();
+  message += "\n";
+  for (uint8_t i = 0; i < server.args(); i++) {
+    message += " " + server.argName(i) + ": " + server.arg(i) + "\n";
+  }
+  server.send(404, "text/plain", message);
+  digitalWrite(led, 0);
+}
+
+
+
+void setup(void) {
+  for(int u=0;u<10;u++){
+    pinMode(ledp[u],OUTPUT);
+
+    }
+  pinMode(36,OUTPUT);
+  for (int thisLed = 0; thisLed < 10; thisLed++) {
+    pinMode(ledPins[thisLed],INPUT); 
+  
+  }
+  ledcSetup(channel, freq, resolution);
+ledcAttachPin(12, channel);
+  Serial.begin(115200);
+  
+
+pinMode(36,INPUT);
+display.init();
+  display.flipScreenVertically();
+  display.setFont(ArialMT_Plain_10);
+
+  for(int x=0;x<3 ;x++ ){
+       pinMode(ledlife[x], OUTPUT);
+       
+    
+    }
+   
+  WiFi.mode(WIFI_STA);
+  
+  WiFi.begin(ssid, password);
+  Serial.println("");
+
+  // Wait for connection
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(500);
+    Serial.print(".");
+  }
+  Serial.println("");
+  Serial.print("Connected to ");
+  Serial.println(ssid);
+  Serial.print("IP address: ");
+  Serial.println(WiFi.localIP());
+
+  if (MDNS.begin("esp32")) {
+    Serial.println("MDNS responder started");
+  }
+
+  
+  server.on("/", handleRoot);
+  server.on("/T", top);
+ server.on("/D", down);
+  server.on("/R", right);
+  server.on("/L", left);
+  server.onNotFound(handleNotFound);
+server.on("/ledDiming",ledDiming);
+ server.begin();
+  Serial.println("HTTP server started");
+
+Serial.begin(115200);
+  Serial.println();
+ display.init(); //初始化(init)
+ 
+  display.setContrast(255); //數值介於0~255，調整對比
+  display.clear();//清除螢幕和緩衝區(clear)
+  //display.drawXbm(35, 0,64, 128, walk_0_img);
+  //印出想顯示的畫面  display.drawXbm(X座標, Y座標, 圖片寬度, 圖片高度, 圖片名稱);
+ // display.display(); //顯示畫面(display)
+  
+}
+
 
 void loop(void) {
     
@@ -383,11 +397,14 @@ void loop(void) {
 
   
 
-/* for (int thisLed = 0; thisLed < 10; thisLed++) {
+ /*for (int thisLed = 0; thisLed < 3; thisLed++) {
     digitalWrite(ledPins[thisLed], LOW); 
   }*/
 display.clear();
-Start();
+for(int u=0;u<10;u++){
+  digitalWrite(ledp[u],LOW);
+}
+ Start();
 int pressstart=0;
 
 while(pressstart!=HIGH||speedconfirm!=1){
@@ -405,6 +422,7 @@ for(int x=0;x<3 ;x++ ){
         digitalWrite(ledlife[x], HIGH);
     
     }
+    
      display.clear();
      display.setFont(ArialMT_Plain_24);
       display.drawString(0, 20, "Ready?");
@@ -458,7 +476,7 @@ while(idle_time!=6){
     while(losetime<4){
     
 
-  state=random(01,5);
+  state=random(0,5);
   switch(state){
 
       
