@@ -6,6 +6,8 @@
 #include <Wire.h> 
 #include "animation.h"
 #include "SSD1306Wire.h" // legacy include: `#include "SSD1306.h"`
+#include "images.h"
+//#include"animate.h"
 #define Logo_width 128
 #define Logo_height 64
 SSD1306Wire  display(0x3c, 21, 22);
@@ -30,7 +32,7 @@ int x=0;
 
 int idle_time=0;
 int state=-1;
-int playSpeed=15;
+int playSpeed=5;
 int point=0;
 int wintime=0;
 int playtime=0;
@@ -42,23 +44,27 @@ int val = 0;
 const int led = 23;
 
 void handleRoot() {
-  snprintf(webSite,1000,"<html> <head> <meta charset='UTF-8'/> <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"> <title>Remote Control LED</title> <style>html{background-color:#cbef99;}.title{text-align:right;color:#ffaad6;text-shadow:0px 3px 5px #000; margin-bottom: 50px;}a{display:inline-block;text-decoration:none;background-color:#FFFFFF;radius:3px; width:150px;text-align:center;margin:0 auto;margin-bottom:30px;font-size:2em;box-shadow: 0px 3px 6px #000;}.btn1{color:#659700;}.btn2{color:#A8A8A8;}</style> </head> <body> <h1 class=\"title\">Remote LED Control</h1> <a class=\"btn2\" href=\"/T\">上</a> <a class=\"btn2\" href=\"/L\">左</a> <a class=\"btn1\" href=\"/D\">下</a> <a class=\"btn1\" href=\"/R\">右</a> </body></html>\";");
+  snprintf(webSite,1000,"<html><head> <meta charset='UTF-8'/> <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"> <title>Remote Control LED</title> <style>html{background-color: #bce6ff; font-family: Arial, Helvetica, sans-serif;}.title{text-align: center; color: #d33d3d; margin-bottom: 50px;}a{position:relative; text-decoration: none; background-color: #FFFFFF; border-radius: 4px; height:100px; width: 100px; text-align: center; margin: 0 ; top:50%; font-size: 2em; /*outline: solid red 2px;*/}.btn{color: #5e5e5e;}.toprow{display:flex; justify-content: center; /* outline: solid red 2px;*/}.secrow{justify-content: center; display:flex; /* outline: solid red 2px;*/}</style></head><body> <h1 class=\"title\">Block controler</h1> <div class=\"toprow\"> <a class=\"btn\" href=\"/T\"><p>top</p></a> </div><div class=\"secrow\"> <a class=\"btn\" href=\"/L\"><p>left</p></a> <a class=\"btn\" href=\"/D\"><p>down</p></a> <a class=\"btn\" href=\"/R\"><p>right</p></a> </div></body></html> ");
   server.send(200, "text/html",webSite);
 
 }
 
 void right(){
-               server.handleClient();
+              server.handleClient();
             server.send(200, "text/html",webSite);
              digitalWrite(led,HIGH);
-              display.drawXbm(100,7 ,64, 128,*(rock_right));
+             display.drawXbm(54,-10 ,64, 128,*(rock_right));
+             Gamepic();
+          
              display.display(); 
                     
              if(i<=7&&i>0){
                display.clear();
-               display.drawXbm(35, 0,64, 128,*( idle+x));
+              /* display.drawXbm(35, 0,64, 128,*( idle+x));*/
+               Gamepic();
+               Drawball(84,32);
                display.display(); 
-               display.drawXbm(100, 7,64, 128,*(  rock_right));
+               display.drawXbm(54, -10,64, 128,*(  rock_right));
                display.display();          
                point++;
                delay(1000);
@@ -72,17 +78,20 @@ void right(){
 
 void left(){
           server.handleClient();
-         server.send(200, "text/html",webSite);
+          server.send(200, "text/html",webSite);
           digitalWrite(led,LOW);
-          display.drawXbm(-35,7 ,64, 128,*(rock_left));
+          display.drawXbm(10,-10 ,64, 128,*(rock_left));
+          Gamepic();
              display.display(); 
             
              
              if(i>=-8&&i<0){
                display.clear();
-               display.drawXbm(35, 0,64, 128,*( idle+x));
+               /*display.drawXbm(35, 0,64, 128,*( idle+x));*/
+                Gamepic();
+               Drawball(84,32);
                display.display(); 
-               display.drawXbm(-35, 7,64, 128,*(  rock_left));
+              display.drawXbm(10, -10,64, 128,*(  rock_left));
                display.display();          
                point++;
                delay(1000);
@@ -96,14 +105,18 @@ void top(){
                server.handleClient();
            server.send(200, "text/html",webSite);
              digitalWrite(led,HIGH);
-              display.drawXbm(-200,7 ,64, 128,*(rock_top));
+              /*display.drawXbm(-200,7 ,64, 128,*(rock_top));*/
+              display.drawXbm(54,0 ,64, 128,*(rock_top));
+              Gamepic();
              display.display(); 
                     
              if(c>=-8&&c<0){
                display.clear();
-               display.drawXbm(35, 0,64, 128,*( idle+x));
+              /* display.drawXbm(35, 0,64, 128,*( idle+x));*/
+               Gamepic();
+               Drawball(84,32);
                display.display(); 
-               display.drawXbm(-200,7,64, 128,*(  rock_top));
+               display.drawXbm(54,0,64, 128,*(  rock_top));
                display.display();          
                point++;
                delay(1000);
@@ -116,18 +129,22 @@ void top(){
   }
 
 void down(){
-          server.handleClient();
+         server.handleClient();
          server.send(200, "text/html",webSite);
           digitalWrite(led,LOW);
-          display.drawXbm(20,-5,64, 128,*(rock_down));
+          display.drawXbm(54,50 ,64, 128,*(rock_top));
+          Gamepic();
+         /* display.drawXbm(20,-5,64, 128,*(rock_down));*/
              display.display(); 
             
              
              if(c<=7&&c>0){
                display.clear();
-               display.drawXbm(35, 0,64, 128,*( idle+x));
+               /*display.drawXbm(35, 0,64, 128,*( idle+x));*/
+                Gamepic();
+               Drawball(84,32);
                display.display(); 
-               display.drawXbm(20, -5,64, 128,*(  rock_down));
+               display.drawXbm(54,50,64, 128,*(  rock_top));
                display.display();          
                point++;
                delay(1000);
@@ -157,6 +174,7 @@ void handleNotFound() {
 
 void setup(void) {
   Serial.begin(115200);
+  display.flipScreenVertically();
 
 pinMode(27,INPUT);
 display.init();
@@ -192,31 +210,148 @@ display.init();
   
   server.on("/", handleRoot);
   server.on("/T", top);
-  server.on("/D", down);
+ server.on("/D", down);
   server.on("/R", right);
   server.on("/L", left);
   server.onNotFound(handleNotFound);
 
-  server.begin();
+ server.begin();
   Serial.println("HTTP server started");
 
 Serial.begin(115200);
   Serial.println();
  display.init(); //初始化(init)
-  display.flipScreenVertically();
+ 
   display.setContrast(255); //數值介於0~255，調整對比
   display.clear();//清除螢幕和緩衝區(clear)
-  display.drawXbm(35, 0,64, 128, walk_0_img);
+  //display.drawXbm(35, 0,64, 128, walk_0_img);
   //印出想顯示的畫面  display.drawXbm(X座標, Y座標, 圖片寬度, 圖片高度, 圖片名稱);
-  display.display(); //顯示畫面(display)
+ // display.display(); //顯示畫面(display)
   
 }
+void Changescene() {
+    for (int i=1; i < 33; i++) {
+        display.setColor(WHITE);
+        display.drawRect(64-2*i, 32-i, 4*i, 2*i);
+         display.display();
+        display.fillRect(64-2*i, 32-i, 4*i, 2*i);
+         display.display();
+        delay(100);
+    }
+    delay(700);
+    for (int i=32; i > 0; i--) {
+        display.clear();
+        display.setColor(WHITE);
+        display.drawRect(64-2*i, 32-i, 4*i, 2*i);
+         display.display();
+        display.fillRect(64-2*i, 32-i, 4*i, 2*i);
+         display.display();
+        delay(100);
+    }
+}//切換畫面用
+void Drawball(int b_x,int b_y){
+    display.drawCircle(b_x, b_y, 2);
+     display.display();
+    display.fillCircle(b_x, b_y, 2);
+     display.display();
+}//遊戲跑動球用
 
+void Lost(){
+    display.drawXbm(0,0, 128, 64, idle1[6]);
+     display.display();
+    delay(1000);
+    //display.clear();//想測試能不能直接覆蓋畫面
+    for (int i=0; i <= 32; i++) {
+        display.drawXbm(128-i*4,0, 128, 64, idle1[4]);
+         display.display();
+        delay(100);
+        display.clear();
+    }
+    for (int i=0; i <=3 ; i++) {
+        display.drawXbm(0,0, 128, 64, idle1[4]);
+         display.display();
+        delay(250);
+        display.clear();
+        display.drawXbm(0,0, 128, 64, idle1[5]);
+         display.display();
+        delay(250);
+        display.clear();
+    }
+}//遊戲輸了用
 
+void Win(){
+    display.drawXbm(0,0, 128, 64, idle1[7]);
+     display.display();
+    delay(1000);
+    //display.clear();//想測試能不能直接覆蓋畫面
+    for (int i=0; i <= 32; i++) {
+        display.drawXbm(128-i*4,0, 128, 64, idle1[2]);
+         display.display();
+        delay(100);
+        display.clear();
+    }
+    for (int i=0; i <=3 ; i++) {
+        display.drawXbm(0,0, 128, 64, idle1[2]);
+        delay(250);
+        display.clear();
+        display.drawXbm(0,0, 128, 64, idle1[3]);
+        delay(250);
+        display.clear();
+    }
+}//遊戲贏了用
 
+void Retry(){
+     display.drawXbm(0,0, 128, 64, idle1[8]);
+    //可以回傳個網頁回去嗎？
+}
 
+void Close(){
+    for (int i=0; i <=3 ; i++) {
+        display.drawXbm(0,0, 128, 64, idle1[9]);
+        delay(250);
+        display.clear();
+        display.drawXbm(0,0, 128, 64, idle1[10]);
+        delay(250);
+        display.clear();
+    }
+    //想設計成漸漸消失的樣子，程式碼還沒想
+}//關機用
 
+void Start(){
+    for (int i=0; i <=3 ; i++) {
+        display.drawXbm(0,0, 128, 64, idle1[11]);
+         display.display(); 
+        delay(500);
+        display.clear();
+        display.drawXbm(0,0, 128, 64, idle1[12]);
+        display.display(); 
+        delay(500);
+        display.clear();
+    }
+   // while(1) {
+        //  /*讀狀態的程式碼要加～不會寫～*/
+       for(int r=0; r<=5;r++){
+        display.drawXbm(0,0, 128, 64, idle1[0]);
+         display.display();
+        delay(250);
+        display.clear();
+        display.drawXbm(0,0, 128, 64, idle1[1]);
+         display.display();
+        delay(250);
+        display.clear();}
+       // if(/*點擊了start*/)break;
+    //}
+}//點start畫面使用
 
+void Gamepic(){
+    display.drawXbm(0,0, 128, 64,*(idle1+13));
+     display.display(); 
+    /*display.setFont(ArialMT_Plain_16);
+    for (int i=120; i>=0; i--) {
+        display.drawString(12,7,i);
+        deley(1000);
+    }*///待解決的問題：倒數計時要怎麼做？一旦用display.clear()畫面全會消失
+}
 
 void loop(void) {
     
@@ -224,9 +359,25 @@ void loop(void) {
  wintime=0;
  playtime=0;
  losetime=0;
+ /* Gamepic();
+  delay(1000);
+  Start();
+   delay(1000);
+  Close();
+   delay(1000);
+   Retry();
+    delay(1000);
+   Win();
+    delay(1000);
+    Lost();
+     delay(1000);
+    Drawball(10,10);
+     delay(1000);*/
 //Game initial
 
-int rd;
+  
+
+/*int rd;
     rd=analogRead(27);
     Serial.println(rd);
     rd=map(rd,0,4100,0,20);
@@ -237,10 +388,11 @@ int rd;
     display.drawString(0, 0, "Read Value is");
     display.drawString(0,20, String(rd));
     display.display();
-
- 
-/*if(){
-/*for(int x=0;x<3 ;x++ ){
+*/
+display.clear();
+Start();
+    delay(1000);
+for(int x=0;x<3 ;x++ ){
        pinMode(ledlife[x], OUTPUT);
         digitalWrite(ledlife[x], HIGH);
     
@@ -278,7 +430,10 @@ while(idle_time!=6){
            server.handleClient();
          server.send(200, "text/html",webSite);
            display.clear();
-           display.drawXbm(35, 0,64, 128,*( idle+x));
+          Gamepic();
+          Drawball(84,32);
+          display.display(); 
+          
            x++;
            display.display(); 
            delay(200);
@@ -286,7 +441,7 @@ while(idle_time!=6){
            x=0;
             }
             idle_time++;
-          }
+       }
           idle_time=0;
 
 
@@ -294,7 +449,7 @@ while(idle_time!=6){
     while(losetime<4){
     
 
-  state=random(0,5);
+  state=random(01,5);
   switch(state){
 
       
@@ -305,8 +460,11 @@ while(idle_time!=6){
            
           display.clear();
         
-          display.drawXbm(35+i*playSpeed, 0,64, 128,*( idle+x));
-         
+          /*display.drawXbm(35+i*playSpeed, 0,64, 128,*( idle+x));*/
+           Gamepic();
+           if(84+i*playSpeed<=112){
+           Drawball(84+i*playSpeed,32);
+           }
           display.display();
          server.handleClient();
          server.send(200, "text/html",webSite);
@@ -339,7 +497,10 @@ while(idle_time!=6){
          server.handleClient();
          server.send(200, "text/html",webSite);
            display.clear();
-           display.drawXbm(35, 0,64, 128,*( idle+x));
+           /*display.drawXbm(35, 0,64, 128,*( idle+x));*/
+            Gamepic();
+           Drawball(84+i*playSpeed,32);
+         
            x++;
            display.display(); 
            delay(200);
@@ -359,8 +520,11 @@ while(idle_time!=6){
       while(i!=-20){
         
           display.clear();
-          display.drawXbm(35+i*playSpeed, 0,64, 128,*( idle+x));
-         
+         /* display.drawXbm(35+i*playSpeed, 0,64, 128,*( idle+x));*/
+           Gamepic();
+           if(84+i*playSpeed>=56){
+           Drawball(84+i*playSpeed,32);
+           }
           display.display();
            server.handleClient();
            server.send(200, "text/html",webSite);
@@ -400,14 +564,14 @@ while(idle_time!=6){
            server.handleClient();
          server.send(200, "text/html",webSite);
            display.clear();
-           display.drawXbm(35, 0,64, 128,*( idle+x));
-           x++;
+           /*display.drawXbm(35, 0,64, 128,*( idle+x));*/
+           Gamepic();
+           Drawball(84+i*playSpeed,32);
+          
            display.display(); 
            delay(200);
-           if(x==2){
-           x=0;
-            }
-            idle_time++;
+          
+           idle_time++;
           }
           idle_time=0;
           break;
@@ -423,8 +587,11 @@ while(idle_time!=6){
            
           display.clear();
         
-          display.drawXbm(35, 0+c*playSpeed,64, 128,*( idle+x));
-         
+          /*display.drawXbm(35, 0+c*playSpeed,64, 128,*( idle+x));*/
+           Gamepic();
+           if(32+c*playSpeed>=4){
+           Drawball(84,32+c*playSpeed);
+           }
           display.display();
          server.handleClient();
          server.send(200, "text/html",webSite);
@@ -458,13 +625,13 @@ while(idle_time!=6){
          server.handleClient();
          server.send(200, "text/html",webSite);
            display.clear();
-           display.drawXbm(35, 0,64, 128,*( idle+x));
-           x++;
+           /*display.drawXbm(35, 0,64, 128,*( idle+x));*/
+          
+            Gamepic();
+           Drawball(84+i*playSpeed,32);
            display.display(); 
            delay(200);
-           if(x==2){
-           x=0;
-            }
+           
             idle_time++;
           }
           idle_time=0;
@@ -478,8 +645,11 @@ while(idle_time!=6){
       while(c!=20){
         
           display.clear();
-          display.drawXbm(35, 0+c*playSpeed,64, 128,*( idle+x));
-         
+          /*display.drawXbm(35, 0+c*playSpeed,64, 128,*( idle+x));*/
+           Gamepic();
+           if(32+c*playSpeed<=60){
+           Drawball(84,32+c*playSpeed);
+           }
           display.display();
            server.handleClient();
            server.send(200, "text/html",webSite);
@@ -518,13 +688,11 @@ while(idle_time!=6){
 
            
            display.clear();
-           display.drawXbm(35, 0,64, 128,*( idle+x));
-           x++;
+           /*display.drawXbm(35, 0,64, 128,*( idle+x));*/
+           Gamepic();
+           Drawball(84+i*playSpeed,32);
            display.display(); 
            delay(200);
-           if(x==2){
-           x=0;
-            }
             idle_time++;
           }
           idle_time=0;
@@ -541,17 +709,22 @@ while(idle_time!=6){
 
 
       display.clear();
-      display.drawString(0, 0, "You Lose");
-      display.display(); 
-      delay(1000);
-      display.clear();
-      display.drawString(0, 0, "Your Score");
-      display.display(); 
-      display.drawString(80, 25, String(point));
-      display.display(); 
-      delay(5000);
-    */
+      if(point>=10){
+        
+        Win();
+        display.drawString(0, 0, "Your Score");
+        display.drawString(80, 25, String(point));
+        display.display(); 
+        delay(3000);
+        }
+        else{
+      Lost();
+       display.drawString(0, 0, "Your Score");
+       display.drawString(80, 25, String(point));
+       display.display(); 
+      delay(3000);
+        }
   
-  
+   display.display(); 
 }
   
