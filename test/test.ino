@@ -39,7 +39,8 @@ int wintime=0;
 int playtime=0;
 int losetime=0;
 WebServer server(80);
-
+/*int ledPins[10] = { 
+  19, 11, 10, 9, 13,1,27,14,12,18}; */
 int val = 0;
 int gametone[2]={330,262};
 const int led = 23;
@@ -68,6 +69,7 @@ void right(){
                display.drawXbm(54, -10,64, 128,*(  rock_right));
                display.display();          
                point++;
+              /* digitalWrite(ledPins[point-1],HIGH);*/
                delay(1000);
                
                buttonState_right=1;
@@ -95,6 +97,7 @@ void left(){
               display.drawXbm(10, -10,64, 128,*(  rock_left));
                display.display();          
                point++;
+              /* digitalWrite(ledPins[point-1],HIGH);*/
                delay(1000);
                
               buttonState_left=1;
@@ -120,6 +123,8 @@ void top(){
                display.drawXbm(54,0,64, 128,*(  rock_top));
                display.display();          
                point++;
+             
+               /*digitalWrite(ledPins[point-1],HIGH);*/
                delay(1000);
                
                buttonState_top=1;
@@ -148,6 +153,7 @@ void down(){
                display.drawXbm(54,50,64, 128,*(  rock_top));
                display.display();          
                point++;
+              /* digitalWrite(ledPins[point-1],HIGH);*/
                delay(1000);
                
               buttonState_down=1;
@@ -180,6 +186,10 @@ void handleNotFound() {
 }
 
 void setup(void) {
+  /*for (int thisLed = 0; thisLed < 10; thisLed++) {
+    pinMode(ledPins[thisLed], OUTPUT); 
+    digitalWrite(ledPins[thisLed], LOW); 
+  }*/
   ledcSetup(channel, freq, resolution);
 ledcAttachPin(12, channel);
   Serial.begin(115200);
@@ -368,39 +378,18 @@ void loop(void) {
  wintime=0;
  playtime=0;
  losetime=0;
- /* Gamepic();
-  delay(1000);
-  Start();
-   delay(1000);
-  Close();
-   delay(1000);
-   Retry();
-    delay(1000);
-   Win();
-    delay(1000);
-    Lost();
-     delay(1000);
-    Drawball(10,10);
-     delay(1000);*/
+ 
 //Game initial
 
   
 
-/*int rd;
-    rd=analogRead(27);
-    Serial.println(rd);
-    rd=map(rd,0,4100,0,20);
-    delay(7);
-    display.clear();
-    display.setTextAlignment(TEXT_ALIGN_LEFT);
-    display.setFont(ArialMT_Plain_16);
-    display.drawString(0, 0, "Read Value is");
-    display.drawString(0,20, String(rd));
-    display.display();
-*/
+/* for (int thisLed = 0; thisLed < 10; thisLed++) {
+    digitalWrite(ledPins[thisLed], LOW); 
+  }*/
 display.clear();
 Start();
 int pressstart=0;
+
 while(pressstart!=HIGH||speedconfirm!=1){
   pressstart=digitalRead(36);
     delay(1);
@@ -735,8 +724,8 @@ while(idle_time!=6){
        display.setTextAlignment(TEXT_ALIGN_LEFT);
         display.setFont(ArialMT_Plain_24);
 
-        display.drawString(80, 0, "Your Score");
-        display.drawString(80, 0, String(point));
+        display.drawString(0, 0, "Your Score");
+        display.drawString(80, 25, String(point));
         display.display(); 
         delay(3000);
         }
@@ -746,7 +735,7 @@ while(idle_time!=6){
       display.setFont(ArialMT_Plain_24);
       
        display.drawString(0, 0, "Your Score");
-       display.drawString(60, 25, String(point));
+       display.drawString(80, 25, String(point));
        display.display(); 
       delay(3000);
         }
