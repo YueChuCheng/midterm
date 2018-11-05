@@ -11,7 +11,9 @@
 #define Logo_width 128
 #define Logo_height 64
 SSD1306Wire  display(0x3c, 21, 22);
-int ledp[10]={2,4,16,17,27,26,13,1,19,18};
+int mel[2]={1109,740};
+int m=0;
+int ledp[10]={2,4,16,17,27,26,19,13,12};
 const int buttonPin_right = 19; 
 int freq = 5000;
 int ledchannel = 0;
@@ -162,11 +164,7 @@ void Start(){
 void Gamepic(){
     display.drawXbm(0,0, 128, 64,*(idle1+13));
      display.display(); 
-    /*display.setFont(ArialMT_Plain_16);
-    for (int i=120; i>=0; i--) {
-        display.drawString(12,7,i);
-        deley(1000);
-    }*///待解決的問題：倒數計時要怎麼做？一旦用display.clear()畫面全會消失
+    
 }
 void handleRoot() {
   snprintf(webSite,2000,"<!DOCTYPE html> <html lang=\"en\"> <head> <meta charset=\"UTF-8\" > <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"> <title>Remote Control LED</title> <script src=\"https://code.jquery.com/jquery-3.3.1.js\"></script> <script>$(document).ready(function(){$(\"[type=range]\").change(function(){var ledvalue=$(\"#led\").val(); $(\".ledvalue\").text(ledvalue);});}); </script> <style>html{background-color: #bce6ff; font-family: Arial, Helvetica, sans-serif;}.title{text-align: center; color: #d33d3d; margin-bottom: 50px;}a{position:relative; text-decoration: none; background-color: #FFFFFF; border-radius: 4px; height:100px; width: 100px; text-align: center; margin: 0 ; top:50%; font-size: 2em; /*outline: solid red 2px;*/}.btn{color: #5e5e5e;}.toprow{display:flex; justify-content: center; /* outline: solid red 2px;*/}.secrow{justify-content: center; display:flex; /* outline: solid red 2px;*/}.speedchoose{/* outline: solid red 2px;*/ display:flex; flex-direction:column; text-align: center;}.submit{/*outline: solid red 2px;*/ text-align: center; width:100px; margin-bottom:30px;}</style> </head> <body> <h1 class=\"title\">Block controler</h1> <div class=\"speedchoose\"> <h3>Game Speed=<span class='ledvalue'>0</span></h3> <form action=\"ledDiming\" method=\"get\" id=\"form1\"> <input type=\"range\" name=\"ledval\" id=\"led\" min=\"0\" max=\"20\"> </form> <br><div> <button type=\"submit\" form=\"form1\" value=\"Submit\" class=\"submit\">Submit</button> </div></div><div class=\"toprow\"> <a class=\"btn\" href=\"/T\"><p>top</p></a> </div><div class=\"secrow\"> <a class=\"btn\" href=\"/L\"><p>left</p></a> <a class=\"btn\" href=\"/D\"><p>down</p></a> <a class=\"btn\" href=\"/R\"><p>right</p></a> </div></body> </html>");
@@ -183,7 +181,8 @@ void right(){
           
              display.display(); 
                     
-             if(i*playSpeed<=64&&i*playSpeed>0){
+             if(i*playSpeed<=70&&i*playSpeed>0){
+               ledcWriteTone(channel, 0);
                display.clear();
               /* display.drawXbm(35, 0,64, 128,*( idle+x));*/
                Gamepic();
@@ -214,7 +213,8 @@ void left(){
              display.display(); 
             
              
-             if(i*playSpeed>=-64&&i*playSpeed<0){
+             if(i*playSpeed>=-70&&i*playSpeed<0){
+               ledcWriteTone(channel, 0);
                display.clear();
                /*display.drawXbm(35, 0,64, 128,*( idle+x));*/
                 Gamepic();
@@ -241,7 +241,8 @@ void top(){
               Gamepic();
              display.display(); 
                     
-             if(c*playSpeed>=-64&&c*playSpeed<0){
+             if(c*playSpeed>=-70&&c*playSpeed<0){
+               ledcWriteTone(channel, 0);
                display.clear();
               /* display.drawXbm(35, 0,64, 128,*( idle+x));*/
                Gamepic();
@@ -272,7 +273,8 @@ void down(){
              display.display(); 
             
              
-             if(c*playSpeed<=64&&c>0){
+             if(c*playSpeed<=70&&c>0){
+               ledcWriteTone(channel, 0);
                display.clear();
                /*display.drawXbm(35, 0,64, 128,*( idle+x));*/
                 Gamepic();
@@ -382,7 +384,7 @@ Serial.begin(115200);
   //display.drawXbm(35, 0,64, 128, walk_0_img);
   //印出想顯示的畫面  display.drawXbm(X座標, Y座標, 圖片寬度, 圖片高度, 圖片名稱);
  // display.display(); //顯示畫面(display)
-  
+   ledcAttachPin(18, channel);
 }
 
 
@@ -395,7 +397,7 @@ void loop(void) {
  
 //Game initial
 
-  
+  w=0;
 
  /*for (int thisLed = 0; thisLed < 3; thisLed++) {
     digitalWrite(ledPins[thisLed], LOW); 
@@ -479,11 +481,17 @@ while(idle_time!=6){
   state=random(0,5);
   switch(state){
 
+
+\
       
      //向右走
      case (1): 
       while(i!=20){
+          if(m==2)m=0;
           
+          ledcWriteTone(channel, mel[m]);
+          m++;
+         
            
           display.clear();
         
@@ -521,6 +529,7 @@ while(idle_time!=6){
            digitalWrite(ledlife[y], LOW);
           }
        while(idle_time!=6){  
+         ledcWriteTone(channel, 0);
          server.handleClient();
          server.send(200, "text/html",webSite);
            display.clear();
@@ -545,7 +554,10 @@ while(idle_time!=6){
   //向左走
  case (2): 
       while(i!=-20){
-        
+         if(m==2)m=0;
+          
+          ledcWriteTone(channel, mel[m]);
+          m++;
           display.clear();
          /* display.drawXbm(35+i*playSpeed, 0,64, 128,*( idle+x));*/
            Gamepic();
@@ -587,7 +599,7 @@ while(idle_time!=6){
           }
 
         while(idle_time!=6){  
-
+ ledcWriteTone(channel, 0);
            server.handleClient();
          server.send(200, "text/html",webSite);
            display.clear();
@@ -611,7 +623,10 @@ while(idle_time!=6){
      case (3): 
       while(c!=-20){
       
-           
+            if(m==2)m=0;
+          
+          ledcWriteTone(channel, mel[m]);
+          m++;
           display.clear();
         
           /*display.drawXbm(35, 0+c*playSpeed,64, 128,*( idle+x));*/
@@ -649,6 +664,7 @@ while(idle_time!=6){
 
       
        while(idle_time!=6){  
+         ledcWriteTone(channel, 0);
          server.handleClient();
          server.send(200, "text/html",webSite);
            display.clear();
@@ -670,7 +686,10 @@ while(idle_time!=6){
   //向下走
  case (4): 
       while(c!=20){
-        
+         if(m==2)m=0;
+          
+          ledcWriteTone(channel, mel[m]);
+          m++;
           display.clear();
           /*display.drawXbm(35, 0+c*playSpeed,64, 128,*( idle+x));*/
            Gamepic();
@@ -712,7 +731,7 @@ while(idle_time!=6){
 
 
         while(idle_time!=6){  
-
+         ledcWriteTone(channel, 0);
            
            display.clear();
            /*display.drawXbm(35, 0,64, 128,*( idle+x));*/
@@ -736,7 +755,7 @@ while(idle_time!=6){
 
 
       display.clear();
-      if(point>=10){
+      if(point>=8){
         
         Win();
        display.setTextAlignment(TEXT_ALIGN_LEFT);
